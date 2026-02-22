@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mustard Seed Radio</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="mustardseed.png">
+
   <style>
-    /* Reset some basic styles */
+    /* Reset styles */
     * {
       margin: 0;
       padding: 0;
@@ -23,6 +27,16 @@
       justify-content: center;
       text-align: center;
       padding: 2rem;
+    }
+
+    /* Logo */
+    .logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(255,111,97,0.5);
     }
 
     h1 {
@@ -47,39 +61,24 @@
       box-shadow: 0 0 20px rgba(255,111,97,0.5);
     }
 
-    .social-links {
-      margin-top: 1rem;
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-    }
-
-    .social-links a {
-      text-decoration: none;
-      color: #ff6f61;
-      font-weight: bold;
-      transition: 0.3s;
-    }
-
-    .social-links a:hover {
-      color: #fff;
-      text-shadow: 0 0 5px #ff6f61;
-    }
-
     footer {
       margin-top: 3rem;
       font-size: 0.9rem;
       color: #555;
     }
 
-    /* Small mobile tweak */
     @media (max-width: 500px) {
       h1 { font-size: 2rem; }
       audio { max-width: 90%; }
+      .logo { width: 80px; height: 80px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Mustard Seed Logo -->
+  <img src="mustardseed.png" alt="Mustard Seed Radio Logo" class="logo">
+
   <h1>🎧 Mustard Seed Radio</h1>
   <p>Streaming live 24/7 – enjoy the music!</p>
 
@@ -88,14 +87,9 @@
     Your browser does not support audio.
   </audio>
 
-  <div class="social-links">
-    <a href="#" target="_blank">Facebook</a>
-    <a href="#" target="_blank">Instagram</a>
-    <a href="#" target="_blank">Twitter</a>
-  </div>
-
   <footer>
     &copy; 2026 Mustard Seed Radio. All rights reserved.
   </footer>
+
 </body>
 </html>
