@@ -47,10 +47,26 @@
     audio {
       width: 100%;
       max-width: 400px;
-      outline: none;
       margin-bottom: 2rem;
       border-radius: 10px;
-      box-shadow: 0 0 20px rgba(255,111,97,0.5);
+
+      background: #111;
+      accent-color: #ff6f61;
+
+      box-shadow: 0 0 20px rgba(255,111,97,0.3);
+    }
+
+    /* Chrome / Safari */
+    audio::-webkit-media-controls-panel {
+      background-color: #111;
+    }
+
+    audio::-webkit-media-controls-play-button,
+    audio::-webkit-media-controls-current-time-display,
+    audio::-webkit-media-controls-time-remaining-display,
+    audio::-webkit-media-controls-timeline,
+    audio::-webkit-media-controls-volume-slider {
+      filter: invert(1);
     }
 
     footer {
@@ -62,13 +78,13 @@
     @media (max-width:500px) {
       h1 { font-size: 2rem; }
       .tagline { font-size: 1rem; }
-      audio, .spotify-embed iframe { max-width: 90%; }
+      audio { max-width: 90%; }
     }
   </style>
 </head>
 <body>
 
-  <h1>🎧 Mustard Seed Radio - Ιντερνετικό Ραδιόφωνο</h1>
+  <h1>🎧 Mustard Seed - Ιντερνετικό Ραδιόφωνο</h1>
   
   <div class="tagline">
     Ακούστε ζωντανά όλο το 24ωρο
