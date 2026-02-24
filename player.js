@@ -11,12 +11,12 @@ const sound = new Howl({
 btn.addEventListener("click", () => {
   if (sound.playing()) {
     sound.pause();
-    btn.textContent = "▶ Play Live Radio";
+    btn.textContent = "▶ Πάτα να γίνει χαμός";
     equalizer.style.visibility = "hidden";
     loadingText.style.display = "none";
   } else {
     loadingText.style.display = "block";
-    btn.textContent = "⏸ Connecting...";
+    btn.textContent = "⏸ Η υπομονή είναι αρετή...";
     sound.play();
   }
 });
@@ -24,12 +24,12 @@ btn.addEventListener("click", () => {
 sound.on('play', () => {
   loadingText.style.display = "none";
   equalizer.style.visibility = "visible";
-  btn.textContent = "⏸ Pause";
+  btn.textContent = "⏸ Παύση";
 });
 
 sound.on('loaderror', () => {
-  loadingText.textContent = "⚠ Stream error. Try again.";
-  btn.textContent = "▶ Retry";
+  loadingText.textContent = "⚠ «Δεν ήταν γραφτό. Πάτα ξανά.»";
+  btn.textContent = "▶ «Δεν ήταν γραφτό. Πάτα ξανά.»";
 });
 
 sound.on('end', () => {
