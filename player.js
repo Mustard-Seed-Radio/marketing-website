@@ -36,3 +36,14 @@ sound.on('end', () => {
   equalizer.style.visibility = "hidden";
   btn.textContent = "▶ Πάτα να γίνει χαμός!";
 });
+
+const toggleDescBtn = document.getElementById("toggleDesc");
+const description = document.querySelector(".description");
+
+toggleDescBtn.addEventListener("click", () => {
+  description.classList.toggle("open");
+
+  toggleDescBtn.textContent = description.classList.contains("open")
+    ? "❌ Κλείσε την περιγραφή"
+    : "ℹ️ Τι είναι το Mustard Seed Radio;";
+});
