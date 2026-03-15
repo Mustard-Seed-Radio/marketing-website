@@ -31,6 +31,7 @@ jobs:
           rsync -av --exclude build . build
 
       - name: Set domain
+        if: github.event_name == 'push'
         run: |
           if [ "${{ github.ref_name }}" = "main" ]; then
             echo "mustardseed.gr" > build/CNAME
@@ -38,12 +39,13 @@ jobs:
             echo "dev.mustardseed.gr" > build/CNAME
           fi
 
-      - name: Upload site
+      - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: build
 
   deploy:
+    if: github.event_name == 'push'
     needs: build
     runs-on: ubuntu-latest
 
@@ -52,6 +54,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy to Pages
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
