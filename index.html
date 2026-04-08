@@ -148,12 +148,12 @@ body {
 
 .input-area {
   display: flex;
+  flex-direction: column; /* stack vertically */
   border-top: 1px solid #333;
   padding: 6px;
-  gap: 4px;
+  gap: 6px;
 }
 .input-area input {
-  flex: 1;
   border: none;
   padding: 8px;
   background: #111;
@@ -164,11 +164,10 @@ body {
   border: none;
   background: linear-gradient(135deg, #ff6f61, #ffb347);
   color: #111;
-  padding: 8px 16px;
+  padding: 10px;
   font-weight: bold;
   cursor: pointer;
   border-radius: 6px;
-  flex-shrink: 0;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .input-area button:hover {
@@ -187,13 +186,9 @@ body {
     width: 100%;
     height: 350px;
     margin-top: 2rem;
-    right: auto;
-    top: auto;
     border-radius: 8px;
   }
   .messages { font-size: 0.85rem; }
-  .input-area input { padding: 6px; }
-  .input-area button { padding: 6px 12px; }
 }
 
 /* reCAPTCHA hide badge for invisible */
@@ -231,7 +226,6 @@ body {
   </div>
 </div>
 
-<!-- Invisible reCAPTCHA widget -->
 <div class="g-recaptcha"
      data-sitekey="6Lcs260sAAAAAPC0UqtQWnNW5jd_8UKdzOXOn_oY"
      data-callback="onRecaptchaSuccess"
@@ -275,8 +269,7 @@ const messages = document.getElementById('messages');
 const sendBtn = document.getElementById('sendBtn');
 const usersColor = {};
 
-// RATE-LIMIT
-const RATE_LIMIT_MS = 10000; // 10 seconds
+const RATE_LIMIT_MS = 10000; 
 let lastSent = parseInt(localStorage.getItem('lastSent') || '0');
 
 function sendMessage() {
@@ -304,25 +297,17 @@ function sendMessage() {
   startCooldown();
 }
 
-// Cooldown visual
 function startCooldown() {
   sendBtn.disabled = true;
   let remaining = RATE_LIMIT_MS / 1000;
   sendBtn.textContent = `Περίμενε ${remaining}s`;
-
   const interval = setInterval(() => {
     remaining -= 1;
-    if (remaining > 0) {
-      sendBtn.textContent = `Περίμενε ${remaining}s`;
-    } else {
-      clearInterval(interval);
-      sendBtn.disabled = false;
-      sendBtn.textContent = "Send";
-    }
+    if (remaining > 0) sendBtn.textContent = `Περίμενε ${remaining}s`;
+    else { clearInterval(interval); sendBtn.disabled = false; sendBtn.textContent = "Send"; }
   }, 1000);
 }
 
-// Firebase listener
 onChildAdded(chatRef, snapshot => {
   const msg = snapshot.val();
   if (!usersColor[msg.name]) usersColor[msg.name] = `hsl(${Math.floor(Math.random()*360)},70%,60%)`;
@@ -336,7 +321,7 @@ onChildAdded(chatRef, snapshot => {
   messages.scrollTop = messages.scrollHeight;
 });
 
-// ===== AUDIO PLAYER =====
+// AUDIO PLAYER
 const loadingText = document.getElementById("loadingText");
 const equalizer = document.getElementById("equalizer");
 const btn = document.getElementById("playBtn");
@@ -354,7 +339,6 @@ btn.addEventListener("click", ()=>{
     sound.play();
   }
 });
-
 sound.on('play', ()=>{
   loadingText.style.display="none";
   equalizer.style.visibility="visible";
@@ -369,7 +353,7 @@ sound.on('end', ()=>{
   btn.textContent="▶ Πάτα να γίνει χαμός!";
 });
 
-// ===== TOGGLE DESCRIPTION =====
+// DESCRIPTION TOGGLE
 const toggleDescBtn = document.getElementById("toggleDesc");
 const description = document.querySelector(".description");
 toggleDescBtn.addEventListener("click", ()=>{
@@ -379,7 +363,7 @@ toggleDescBtn.addEventListener("click", ()=>{
     : "ℹ️ Τι είναι το Mustard Seed Radio;";
 });
 
-// ===== RECAPTCHA =====
+// RECAPTCHA
 sendBtn.addEventListener('click', () => {
   const now = Date.now();
   if (now - lastSent < RATE_LIMIT_MS) {
@@ -388,11 +372,7 @@ sendBtn.addEventListener('click', () => {
   }
   grecaptcha.execute();
 });
-
-// callback for successful reCAPTCHA
-window.onRecaptchaSuccess = function(token){
-  sendMessage();
-}
+window.onRecaptchaSuccess = function(token){ sendMessage(); }
 </script>
 </body>
 </html>
