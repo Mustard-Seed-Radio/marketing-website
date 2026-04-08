@@ -1,3 +1,7 @@
+// player.js
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
+
 const loadingText = document.getElementById("loadingText");
 const equalizer = document.getElementById("equalizer");
 const btn = document.getElementById("playBtn");
@@ -45,45 +49,46 @@ sound.on('end', () => {
   btn.textContent = "▶ Πάτα να γίνει χαμός!";
 });
 
-// ===== CHAT =====
-const chatInput = document.getElementById('chatInput');
-const messages = document.getElementById('messages');
-const sendBtn = document.getElementById('sendBtn');
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyCR2jYJEqYIA7XW3r4aOaRxEtbZAS4bNQw",
+    authDomain: "mustard-seed-gr.firebaseapp.com",
+    databaseURL: "https://mustard-seed-gr-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "mustard-seed-gr",
+    storageBucket: "mustard-seed-gr.firebasestorage.app",
+    messagingSenderId: "147197767959",
+    appId: "1:147197767959:web:6d27cb7d746a8139090752"
+  };
 
-let toggle = false; // alternates sides
+f// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const messagesRef = ref(db, 'chat');
+
+// Send message
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const messages = document.getElementById('messages');
+
+function displayMessage(text) {
+  const msg = document.createElement('div');
+  msg.className = 'message';
+  msg.textContent = text;
+  messages.appendChild(msg);
+  messages.scrollTop = messages.scrollHeight;
+}
 
 function sendMessage() {
   if (!chatInput.value.trim()) return;
-
-  const msgContainer = document.createElement('div');
-  msgContainer.className = 'container';
-  if (toggle) msgContainer.classList.add('darker');
-  toggle = !toggle;
-
-  const avatar = document.createElement('img');
-  avatar.src = toggle ? '/w3images/bandmember.jpg' : '/w3images/avatar_g2.jpg';
-  avatar.alt = 'Avatar';
-  if (!toggle) avatar.classList.add('right');
-
-  const msgText = document.createElement('p');
-  msgText.textContent = chatInput.value;
-
-  const time = document.createElement('span');
-  const now = new Date();
-  time.textContent = now.getHours() + ':' + now.getMinutes().toString().padStart(2,'0');
-  time.className = toggle ? 'time-left' : 'time-right';
-
-  msgContainer.appendChild(avatar);
-  msgContainer.appendChild(msgText);
-  msgContainer.appendChild(time);
-
-  messages.appendChild(msgContainer);
-  messages.scrollTop = messages.scrollHeight;
-
+  push(messagesRef, { text: chatInput.value });
   chatInput.value = '';
 }
 
 sendBtn.addEventListener('click', sendMessage);
-chatInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') sendMessage();
+chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+
+// Listen for new messages
+onChildAdded(messagesRef, snapshot => {
+  const data = snapshot.val();
+  displayMessage(data.text);
 });
