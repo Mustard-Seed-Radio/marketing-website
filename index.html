@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mustard Seed Radio</title>
+<title>Mustard Seed Radio Chat</title>
 <link rel="icon" type="image/png" href="mustard-seed-logo.png">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -23,8 +23,9 @@ body {
 
 /* NAVBAR */
 .navbar {
-  position: sticky;
+  position: absolute;
   top: 0;
+  left: 0;
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -32,7 +33,6 @@ body {
   padding: 15px 25px;
   background: rgba(0,0,0,0.6);
   backdrop-filter: blur(6px);
-  z-index: 10;
 }
 .navbar h1 { font-size: 1.5rem; color: #ff6f61; }
 
@@ -58,6 +58,9 @@ body {
 
 /* Description panel */
 .description {
+  position: absolute;
+  top: 70px;
+  right: 20px;
   max-width: 400px;
   padding: 15px 20px;
   background: #111;
@@ -67,8 +70,8 @@ body {
   line-height: 1.6;
   box-shadow: 0 0 10px rgba(255, 200, 0, 0.2);
   text-align: left;
-  margin-top: 10px;
 }
+.description p { margin-bottom: 10px; }
 
 /* PLAYER */
 .player {
@@ -76,7 +79,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  margin: 2rem 0;
+  margin-bottom: 2rem;
 }
 #playBtn {
   background: linear-gradient(135deg, #ff6f61, #ffb347);
@@ -127,7 +130,7 @@ body {
 .chat-container {
   width: 100%;
   max-width: 400px;
-  height: 300px;
+  height: 400px;
   background: rgba(0,0,0,0.6);
   border: 1px solid #333;
   display: flex;
@@ -143,14 +146,27 @@ body {
 }
 .message {
   margin-bottom: 6px;
-  padding: 4px 8px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 8px;
-  word-break: break-word;
+  padding: 4px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.message .timestamp {
+  font-size: 0.7rem;
+  color: #ccc;
+  margin-left: 6px;
 }
 .input-area {
   display: flex;
   border-top: 1px solid #333;
+}
+#nameInput {
+  width: 30%;
+  border: none;
+  padding: 8px;
+  background: #111;
+  color: #fff;
+  border-radius: 4px 0 0 4px;
+  margin-right: 5px;
 }
 #chatInput {
   flex: 1;
@@ -171,7 +187,7 @@ body {
 @media (max-width:500px) {
   .navbar { flex-direction: column; gap: 10px; }
   .navbar h1 { font-size: 1.2rem; }
-  .description { max-width: 100%; }
+  .description { right: 10px; left: 10px; max-width: none; }
   #playBtn { font-size: 1rem; padding: 14px 26px; }
 }
 </style>
@@ -181,24 +197,21 @@ body {
 <header class="navbar">
   <h1>🎧 Mustard Seed</h1>
   <details class="nav-dropdown">
-    <summary>ℹ️ Τι είναι το Mustard Seed Radio;</summary>
+    <summary id="toggleDesc">ℹ️ Τι είναι το Mustard Seed Radio;</summary>
     <div class="description">
-      <p>Καφενειακού τύπου κουβέντα για κάθε περίσταση και θέμα.</p>
-      <p>Είμαστε εφοδιασμένοι με τις απαραίτητες περγαμηνές, μιας και καθόμαστε αναπαυτικά πάνω στον φράχτη που χωρίζει τη Γενιά Χ από τη Γενιά Υ τότε που όλα ήταν λίγο πιο ζάχαρη.</p>
-      <p>Ο παρόν σταθμός και οι εκπομπές του λειτουργούν ως ψυχοθεραπεία για κάποιους από εμάς — χωρίς ιατρική συνταγή! 😌</p>
+      <p>Καφενειακού τύπου κουβέντα για κάθε περίσταση και θέμα. Ένας μουσταρδόσπορος αρκεί...</p>
+      <p>Είμαστε εφοδιασμένοι με τις απαραίτητες περγαμηνές...</p>
+      <p>Ο παρόν σταθμός και οι εκπομπές του λειτουργούν ως ψυχοθεραπεία...</p>
     </div>
   </details>
 </header>
 
 <div class="player">
   <button id="playBtn">▶ Πάτα να γίνει χαμός!</button>
-  <div class="loading" id="loadingText">⏳ «Λίγο buffering ακόμα ...»</div>
+  <div class="loading" id="loadingText">⏳ «Λίγο buffering ακόμα...»</div>
   <div class="equalizer" id="equalizer">
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
-    <div class="bar"></div>
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="bar"></div><div class="bar"></div>
   </div>
 </div>
 
@@ -206,102 +219,74 @@ body {
 <div class="chat-container">
   <div class="messages" id="messages"></div>
   <div class="input-area">
+    <input type="text" id="nameInput" placeholder="Το όνομά σου..." />
     <input type="text" id="chatInput" placeholder="Γράψε μήνυμα..." />
     <button id="sendBtn">Send</button>
   </div>
 </div>
 
-<!-- HOWLER -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-
-<!-- MODULE JS -->
+<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js";
 
-// Replace with your Firebase config
 const firebaseConfig = {
-    apiKey: "AIzaSyCR2jYJEqYIA7XW3r4aOaRxEtbZAS4bNQw",
-    authDomain: "mustard-seed-gr.firebaseapp.com",
-    databaseURL: "https://mustard-seed-gr-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "mustard-seed-gr",
-    storageBucket: "mustard-seed-gr.firebasestorage.app",
-    messagingSenderId: "147197767959",
-    appId: "1:147197767959:web:6d27cb7d746a8139090752"
-  };
+  apiKey: "AIzaSyCR2jYJEqYIA7XW3r4aOaRxEtbZAS4bNQw",
+  authDomain: "mustard-seed-gr.firebaseapp.com",
+  databaseURL: "https://mustard-seed-gr-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "mustard-seed-gr",
+  storageBucket: "mustard-seed-gr.firebasestorage.app",
+  messagingSenderId: "147197767959",
+  appId: "1:147197767959:web:6d27cb7d746a8139090752"
+};
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const messagesRef = ref(db, 'chat');
 
-// ====== RADIO ======
-const loadingText = document.getElementById("loadingText");
-const equalizer = document.getElementById("equalizer");
-const btn = document.getElementById("playBtn");
-
-const sound = new Howl({
-  src: ['https://centova.gr-net.gr/proxy/mustardseed/stream'],
-  html5: true,
-  volume: 1.0
-});
-
-btn.addEventListener("click", () => {
-  if (sound.playing()) {
-    sound.pause();
-    btn.textContent = "▶ Πάτα να γίνει χαμός!";
-    equalizer.style.visibility = "hidden";
-    loadingText.style.display = "none";
-  } else {
-    loadingText.style.display = "block";
-    btn.textContent = "⏸ Παύση";
-    sound.play();
-  }
-});
-
-sound.on('play', () => {
-  loadingText.style.display = "none";
-  equalizer.style.visibility = "visible";
-  btn.textContent = "⏸ Παύση";
-});
-
-sound.on('loaderror', () => {
-  loadingText.textContent = "⚠ «Δεν ήταν γραφτό. Πάτα ξανά.»";
-  btn.textContent = "▶ «Δεν ήταν γραφτό. Πάτα ξανά.»";
-});
-
-sound.on('end', () => {
-  equalizer.style.visibility = "hidden";
-  btn.textContent = "▶ Πάτα να γίνει χαμός!";
-});
-
-// ====== CHAT ======
 const chatInput = document.getElementById('chatInput');
+const nameInput = document.getElementById('nameInput');
 const messages = document.getElementById('messages');
 const sendBtn = document.getElementById('sendBtn');
 
-function displayMessage(text) {
+// Generate consistent color from name
+function stringToColor(str) {
+  let hash = 0;
+  for (let i=0; i<str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+  return "#" + "00000".substring(0, 6 - c.length) + c;
+}
+
+// Display message with colour + timestamp
+function displayMessage({ name, text, timestamp }) {
   const msg = document.createElement('div');
   msg.className = 'message';
-  msg.textContent = text;
+  const color = stringToColor(name || "Anonymous");
+  const time = new Date(timestamp);
+  const timeStr = `${time.getHours().toString().padStart(2,'0')}:${time.getMinutes().toString().padStart(2,'0')}`;
+  msg.innerHTML = `<strong style="color:${color}">${name}</strong>: ${text} <span class="timestamp">${timeStr}</span>`;
   messages.appendChild(msg);
   messages.scrollTop = messages.scrollHeight;
 }
 
 function sendMessage() {
-  if (!chatInput.value.trim()) return;
-  push(messagesRef, { text: chatInput.value })
-    .then(() => chatInput.value = '')
-    .catch(err => alert("Error sending message: " + err));
+  const name = nameInput.value.trim() || "Anonymous";
+  const text = chatInput.value.trim();
+  if (!text) return;
+  const timestamp = Date.now();
+  push(messagesRef, { name, text, timestamp });
+  chatInput.value = '';
 }
 
 sendBtn.addEventListener('click', sendMessage);
-chatInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+chatInput.addEventListener('keypress', (e) => { if(e.key==='Enter') sendMessage(); });
 
-onChildAdded(messagesRef, snapshot => {
-  const data = snapshot.val();
-  displayMessage(data.text);
-});
+onChildAdded(messagesRef, (snapshot) => displayMessage(snapshot.val()));
 </script>
+
+<!-- Howler -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="player.js"></script>
 
 </body>
 </html>
